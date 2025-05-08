@@ -26,6 +26,12 @@ class function:
             # If there is blood, damage reduction (monster attack power)
             self.player_status.hp -= self.monster_status.attack
 
+    # decreases the monster's health by player attacked, where it can't fall below 0.
+    def damage_monster(self):
+        if self.monster_status.hp > 0:
+            # If there is blood, damage reduction (monster attack power)
+            self.monster_status.hp -= self.player_status.attack
+
     # marks that player has got key
     def has_key(self):
         self.player_status.has_key = True
@@ -40,55 +46,38 @@ class function:
 
         # Return:
         #     bool: True if the player moves to the coordinate, otherwise False
-        if symbols == 'o':
-            self.x = coordinate_x  # update player location
-            self.y = coordinate_y
+        if symbols == '0':
+            self.player_status.x = coordinate_x  # update player location
+            self.player_status.y = coordinate_y
             return True
 
+        # player meet door
+        # if difficulty is normal level or hell level, then judge if player x,y is maze size, update (0,0)
         elif symbols == 'D':
-            self.land_at_destination()
-            self.x = coordinate_x
-            self.y = coordinate_y
-            print(f"{self.name} has reached: Sector 9-Delta")
+            self.has_key()
+            self.player_status.x = coordinate_x
+            self.player_status.y = coordinate_y
+            print(f"{self.player_status.name} have escaped from the maze")
             return True
 
-        elif symbols == '.':
-            print("Cannot move past an asteroid!")
+        # meet wall, cant pass
+        elif symbols == '1':
+            print("It's wall, Cannot move!")
             return False
 
-        elif symbols == 'E':
-            self.consume_fuel()  # fuel -1
-            self.damage_ship()  # health -1
-            self.x = coordinate_x
-            self.y = coordinate_y
-            if self.is_out_of_health():  # health == 0
-                print(f"{self.name} has fallen.")
-            else:
-                print(f"We won the fight! Health: {self.health}/3")  # health > 0
-            return True
-
+        # met monster part
         elif symbols == 'M':
-            self.consume_fuel()  # fuel -1
-            self.add_mineral()  # mineral +1
-            self.x = coordinate_x
-            self.y = coordinate_y
-            print(f'+1 mineral! Minerals: {self.minerals}')
-            return True
-
-        elif symbols == 'R':
-            if self.health == 3:
-                print("Ship is already at full health!")
+            # If one part is not dead, continue to attack until one part dies, then stop the attack.
+            while not self.player_is_out_of_hp() or not self.monster_is_out_of_hp():
+                self.damage_player()  # player decrease hp
+                self.damage_monster()   # monster decrease hp
                 return False
-            elif self.health != 3 and self.minerals == 0:
-                print("You need a mineral to activate this repair station.")
-                return False
-            elif self.health != 3 and self.minerals > 0:
-                self.consume_fuel()  # fuel -1
-                self.use_mineral()  # mineral -1
-                self.x = coordinate_x  # update ship location
-                self.y = coordinate_y
-                self.repair_ship()  # health +1
-                print(f'Ship repaired! Health: {self.health}/3')
+            if self.player_is_out_of_hp():
+                print(f"{self.player_status.name} has fallen.")
+            else:
+                print(f"{self.player_status.name} successfully killed the monster. your hp: {self.player_status.hp}/10")
+                self.player_status.x = coordinate_x
+                self.player_status.y = coordinate_y
                 return True
         else:
             return False
