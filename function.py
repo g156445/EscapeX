@@ -1,4 +1,7 @@
+import random
+
 import player_monster
+import question
 
 
 class function:
@@ -67,13 +70,32 @@ class function:
 
         # met monster part
         elif symbols == 'M':
+            print("You encountered a monster!")
+
+            # ask question
+            if question.ask_question():
+                self.player_status.attack = random.randint(5, 10)
+                print(f"Correct! Your attack power is now {self.player_status.attack}")
+            else:
+                print("Wrong answer! You have no attack power and will take damage.")
+                self.player_status.attack = 0
+
+            # create a monster instance for fight
+            print(f"Monster HP: {self.monster_status.hp}, Attack: {self.monster_status.attack}")
+
+            round_count = 1
             # If one part is not dead, continue to attack until one part dies, then stop the attack.
-            while not self.player_is_out_of_hp() or not self.monster_is_out_of_hp():
-                self.damage_player()  # player decrease hp
-                self.damage_monster()   # monster decrease hp
-                return False
+            while not self.player_is_out_of_hp() and not self.monster_is_out_of_hp():
+                print(f"-- Round {round_count} --")
+                self.damage_player()        # monster player hp
+                self.damage_monster()       # monster decrease hp
+                print(f"You dealt damage. Monster HP: {self.monster_status.hp}")
+                print(f"Monster attacked. Your HP: {self.player_status.hp}")
+                round_count += 1
+
             if self.player_is_out_of_hp():
                 print(f"{self.player_status.name} has fallen.")
+                return False
             else:
                 print(f"{self.player_status.name} successfully killed the monster. your hp: {self.player_status.hp}/10")
                 self.player_status.x = coordinate_x
