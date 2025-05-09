@@ -3,8 +3,8 @@
 grid = [[1 for _ in range(8)] for _ in range(8)]
 
 # print grid
-for row in grid:
-    print(row)
+# for row in grid:
+#     print(row)
 
 maze1 = [
     [0, 1, 1, 1, 1, 1, 1, 1],
