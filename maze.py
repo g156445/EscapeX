@@ -2,7 +2,7 @@
 
 grid = [[1 for _ in range(8)] for _ in range(8)]
 
-# 打印出来看一下
+# print grid
 for row in grid:
     print(row)
 
