@@ -1,6 +1,8 @@
+import random
 import maze
 import game_continue
 import function
+
 
 # show map; 'P' is player; '.' is path; '#' is walls
 def print_map(current_maze, player_x, player_y):
@@ -10,7 +12,7 @@ def print_map(current_maze, player_x, player_y):
             if x == player_x and y == player_y:
                 line += 'P '  # player location
             elif val == 0:
-                line += '.'  # convert path
+                line += '. '  # convert path
             elif val == 1:
                 line += '# '  # convert wall
             elif val == 'M':
@@ -19,21 +21,6 @@ def print_map(current_maze, player_x, player_y):
                 line += 'D '
         print(line)
     print()
-
-# show player status
-def show_player_status(logic):
-    print("--- Player Status ---")
-    print(f"Name: {logic.player_status.name}")
-    print(f"HP: {logic.player_status.hp}/10")
-    print(f"Attack: {logic.player_status.attack}")
-    print(f"Position: ({logic.player_status.x}, {logic.player_status.y})")
-
-    if logic.player_status.has_key:
-        take_key = 'Yes'
-    else:
-        take_key = 'No'
-    print(f"Has Key: {take_key}")
-    print("----------------------")
 
 def main():
     game_status = game_continue.game_continue()
@@ -58,32 +45,35 @@ def main():
         monster_attack = 4
     else:
         monster_attack = 6
-    logic = function.function(player_name, monster_attack)
+    logic = function.function(player_name, monster_attack, difficulty, game_status)
+    logic.player_status.attack = random.randint(5, 10)
+    print(f"At the beginning game, initial attack power is:{logic.player_status.attack}")
 
     x = 0
     y = 0
+    # enter maze list
     for level_maze in mazes:
         print(f"=== Level {game_status.current_level} Start ===")
 
         while True:
             # show map and show command
             print_map(level_maze, x, y)
-            print("Command: (n/s/e/w to move, status to show player info)")
-            move = input("Your move: ").lower()
-
-            if move == "status":
-                show_player_status(logic)
-                continue
-
+            print("Command: (n/s/e/w to move, 'status' to show player info)")
+            command = input("Your move: ").lower()
             new_x = x
             new_y = y
-            if move == "w":
+            if command == "status":
+                # show player_monster status
+                print(logic.player_status)
+                continue
+
+            elif command == "w":
                 new_y -= 1
-            elif move == "s":
+            elif command == "s":
                 new_y += 1
-            elif move == "d":
+            elif command == "d":
                 new_x += 1
-            elif move == "a":
+            elif command == "a":
                 new_x -= 1
             else:
                 print("Invalid command.")
@@ -95,9 +85,13 @@ def main():
                 continue
 
             symbol = str(level_maze[new_y][new_x])
-            moved = logic.interact(symbol, new_x, new_y)
+            moved = logic.interact(symbol, new_x, new_y, level_maze)
+            if moved == "NEXT":
+                x = 0
+                y = 0
+                break  # kill current while loop, into next map
 
-            if moved:
+            elif moved:
                 x = new_x
                 y = new_y
 
@@ -106,8 +100,12 @@ def main():
                 print("Game Over! You died.")
                 return
 
+            # fix bug: player arrived door but no key -> can't escape maze
+            if not logic.player_status.has_key and logic.player_status.x == len(maze.maze1) - 1 and logic.player_status.y == len(maze.maze1) - 1:
+                print("Need Key to Open door!")
+
             # Check if the player has the key and escapes from this level
-            if logic.player_status.has_key:
+            if logic.player_status.has_key and logic.player_status.x == len(maze.maze1) - 1 and logic.player_status.y == len(maze.maze1) - 1:
                 if game_status.continue_maze(difficulty):
                     x = 0
                     y = 0
