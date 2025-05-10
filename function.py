@@ -57,7 +57,6 @@ class function:
         # player meet door
         # if difficulty is normal level or hell level, then judge if player x,y is maze size, update (0,0)
         elif symbols == 'D':
-            self.has_key()
             self.player_status.x = coordinate_x
             self.player_status.y = coordinate_y
             print(f"{self.player_status.name} have escaped from the maze")
@@ -80,27 +79,41 @@ class function:
                 print("Wrong answer! You have no attack power and will take damage.")
                 self.player_status.attack = 0
 
-            # create a monster instance for fight
-            print(f"Monster HP: {self.monster_status.hp}, Attack: {self.monster_status.attack}")
+            # Generate a new monster for each battle (to avoid health duplication)
+            monster = player_monster.Monster(self.monster_status.attack)
+            print(f"Monster HP: {monster.hp}, Attack: {monster.attack}")
 
             round_count = 1
-            # If one part is not dead, continue to attack until one part dies, then stop the attack.
-            while not self.player_is_out_of_hp() and not self.monster_is_out_of_hp():
+            # Combat cycle: until one side dies
+            while self.player_status.hp > 0 and monster.hp > 0:
                 print(f"-- Round {round_count} --")
-                self.damage_player()        # monster player hp
-                self.damage_monster()       # monster decrease hp
-                print(f"You dealt damage. Monster HP: {self.monster_status.hp}")
-                print(f"Monster attacked. Your HP: {self.player_status.hp}")
+
+                # player attack player
+                monster.hp -= self.player_status.attack
+                monster.hp = max(monster.hp, 0)
+                print(f"Player dealt {self.player_status.attack} damage. Monster HP: {monster.hp}")
+
+                # if monster die, break out
+                if monster.hp <= 0:
+                    self.player_status.x = coordinate_x
+                    self.player_status.y = coordinate_y
+                    break
+
+                # monster attack player
+                self.player_status.hp -= monster.attack
+                self.player_status.hp = max(self.player_status.hp, 0)
+                print(f"Monster dealt {monster.attack} damage. Your HP: {self.player_status.hp}")
                 round_count += 1
 
-            if self.player_is_out_of_hp():
+            if self.player_status.hp <= 0:
                 print(f"{self.player_status.name} has fallen.")
                 return False
             else:
-                print(f"{self.player_status.name} successfully killed the monster. your hp: {self.player_status.hp}/10")
+                print(f"{self.player_status.name} successfully killed the monster. Your HP: {self.player_status.hp}/10")
                 self.player_status.x = coordinate_x
                 self.player_status.y = coordinate_y
                 return True
+
         else:
             return False
 
