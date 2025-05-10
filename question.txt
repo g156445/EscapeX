@@ -1,0 +1,11 @@
+(T/F)A class acts as a blueprint for defining objects?
+(T/F)The number of instance attributes in a class has to always be equal to the number of parameters of the __init__ method excluding self?
+(T/F)A function can have no parameters?
+(T/F)You can have a variable with the same name inside and outside a function?
+(T/F)Printing inside a function is considered a side effect?
+(T/F)Lists can be initialised using either square brackets [] or round brackets () ?
+(T/F)Lists can contain elements of different types?
+(T/F)Python lists and arrays are the same?
+Which method is used to remove an element by value from a list in Python? pop()? remove()? delete()? discard()?
+What stores the command line arguments? args? sys.argv? sys.args? sys.list?
+(T/F)A tuple is the same as list except it is mutable?
