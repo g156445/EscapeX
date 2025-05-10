@@ -17,7 +17,7 @@ def ask_question() -> bool:
 
     # question and answer
     user_input = input(f" {question_line}\nPlease Answer：").strip()
-    if question_line == "(T/F)A class acts as a blueprint for defining objects？" and user_input.lower() == 't':
+    if question_line == "(T/F)A class acts as a blueprint for defining objects?" and user_input.lower() == 't':
         return True
     elif question_line == "(T/F)The number of instance attributes in a class has to always be equal to the number of parameters of the __init__ method excluding self?" and user_input.lower() == 'f':
         return True
