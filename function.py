@@ -2,7 +2,6 @@ import random
 import player_monster
 import question
 
-
 class function:
     def __init__(self, player_name: str, monster_attack: int, difficulty: str, game_status):
         self.player_status = player_monster.Player(player_name)
@@ -42,11 +41,12 @@ class function:
 
     # player interaction based on symbols and coordinate.
     # Each interaction change player's state (coordinate, hp, attack, has_key).
-    def interact(self, symbols: str, coordinate_x: int, coordinate_y: int) -> bool:
+    def interact(self, symbols: str, coordinate_x: int, coordinate_y: int, maze_map:[[]]) -> bool | str:
         # Parameters:
         #     symbol (str): The symbol representing the entity ('0', '1', 'M', 'D')
-        #     symbol_x (int): The x-coordinate of the entity
-        #     symbol_y (int): The y-coordinate of the entity
+        #     coordinate_x (int): The x-coordinate of the entity
+        #     coordinate_y (int): The y-coordinate of the entity
+        #     maze_map: Identify the location of monsters on the map
 
         # Return:
         #     bool: True if the player moves to the coordinate, otherwise False
@@ -58,10 +58,22 @@ class function:
         # player meet door
         # if difficulty is normal level or hell level, then judge if player x,y is maze size, update (0,0)
         elif symbols == 'D':
-            self.player_status.x = coordinate_x
-            self.player_status.y = coordinate_y
-            print(f"{self.player_status.name} have escaped from the maze")
-            return True
+            # player has key can escape
+            if self.player_status.has_key:
+                self.player_status.x = coordinate_x
+                self.player_status.y = coordinate_y
+                return True
+            else:
+                # player no key
+                if self.difficulty in ['NORMAL', 'HELL']:
+                    print("No key, moving to the next map...")
+                    # into next map
+                    if self.game_status.continue_maze(self.difficulty):
+                        self.player_status.x = 0
+                        self.player_status.y = 0
+                        return "NEXT"  # str signal
+                print("Need Key to Open door!")
+                return False
 
         # meet wall, cant pass
         elif symbols == '1':
@@ -74,11 +86,11 @@ class function:
 
             # ask question
             if question.ask_question():
-                self.player_status.attack = random.randint(5, 10)
+                self.player_status.attack += random.randint(5, 10)
                 print(f"Correct! Your attack power is now {self.player_status.attack}")
             else:
                 print("Wrong answer! You have no attack power and will take damage.")
-                self.player_status.attack = 0
+                self.player_status.attack += 0
 
             # Generate a new monster for each battle (to avoid health duplication)
             monster = player_monster.Monster(self.monster_status.attack)
@@ -104,6 +116,7 @@ class function:
                         self.has_key()
                         print("You obtained the key!")
 
+                    maze_map[coordinate_y][coordinate_x] = 0
                     self.player_status.x = coordinate_x
                     self.player_status.y = coordinate_y
                     break
