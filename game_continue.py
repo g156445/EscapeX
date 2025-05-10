@@ -21,6 +21,6 @@ class game_continue:
             return True
         else:
             self.has_key = True
-            print("obtained the key")
+            print("Player Obtained the key")
             # If there is no next level, clear the level
             return False
