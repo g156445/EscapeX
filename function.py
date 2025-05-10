@@ -1,13 +1,14 @@
 import random
-
 import player_monster
 import question
 
 
 class function:
-    def __init__(self, player_name: str, monster_attack: int):
+    def __init__(self, player_name: str, monster_attack: int, difficulty: str, game_status):
         self.player_status = player_monster.Player(player_name)
         self.monster_status = player_monster.Monster(monster_attack)
+        self.difficulty = difficulty.upper()
+        self.game_status = game_status
 
     # Returns True if the player has no hp (reaches 0), otherwise False
     def player_is_out_of_hp(self) -> bool:
@@ -95,6 +96,14 @@ class function:
 
                 # if monster die, break out
                 if monster.hp <= 0:
+                    if self.difficulty == 'SIMPLE':
+                        self.has_key()
+                    elif self.difficulty == 'NORMAL' and self.game_status.current_level == 3:
+                        self.has_key()
+                    elif self.difficulty == 'HELL' and self.game_status.current_level == 5:
+                        self.has_key()
+                        print("You obtained the key!")
+
                     self.player_status.x = coordinate_x
                     self.player_status.y = coordinate_y
                     break
@@ -108,6 +117,7 @@ class function:
             if self.player_status.hp <= 0:
                 print(f"{self.player_status.name} has fallen.")
                 return False
+
             else:
                 print(f"{self.player_status.name} successfully killed the monster. Your HP: {self.player_status.hp}/10")
                 self.player_status.x = coordinate_x
