@@ -26,6 +26,20 @@ class Player:
         self.hp = 10
         self.has_key = False
 
+    # show player status
+    def __str__(self):
+        if self.has_key:
+            take_key = 'Yes'
+        else:
+            take_key = 'No'
+        return (f"--- Player Status ---\n"
+                f"Name: {self.name}\n"
+                f"HP: {self.hp}/10\n"
+                f"Attack: {self.attack}\n"
+                f"Position: ({self.x}, {self.y})\n"
+                f"Has Key: {take_key}\n"
+                f"----------------------")
+
 class Monster:
     def __init__(self, attack: int):
         self.hp = random.randint(10, 20)    #random set monster hp 10-20 in each map
