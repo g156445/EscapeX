@@ -58,7 +58,7 @@ def main():
         while True:
             # show map and show command
             print_map(level_maze, x, y)
-            print("Command: (n/s/e/w to move, 'status' to show player info)")
+            print("Command: (w/s/a/d to move, 'status' to show player info)")
             command = input("Your move: ").lower()
             new_x = x
             new_y = y
